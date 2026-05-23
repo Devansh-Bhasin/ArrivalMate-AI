@@ -38,7 +38,9 @@ export function buildMockPlan(profile: ProfileInput): PlanSchema {
       ? "your school"
       : isWorker
         ? "your workplace"
-        : "a trusted local support contact";
+        : profile.city === "Other"
+          ? "Local community support contacts"
+          : `${profile.city} community support contacts`;
   const cityLabel =
     profile.city === "Other"
       ? "the area around your school or workplace in BC"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { ProfileInput } from "@/lib/types";
 import {
@@ -38,7 +38,7 @@ export function OnboardingForm() {
   const [form, setForm] = useState(initialState);
   const [error, setError] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
-  const [isPending, startTransition] = useTransition();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const toggleNeed = (need: ProfileInput["selectedNeeds"][number]) => {
     setForm((current) => {
@@ -55,6 +55,7 @@ export function OnboardingForm() {
 
   async function handleSubmit() {
     setError("");
+    setIsSubmitting(true);
     setStatusMessage("Saving your arrival profile...");
     try {
       const profileResponse = await fetch("/api/profile", {
@@ -71,7 +72,7 @@ export function OnboardingForm() {
       }
 
       setStatusMessage(
-        "ArrivalMate AI is generating your personalized plan. This can take a little longer when Gemini is busy.",
+        "ArrivalMate AI is generating your personalized plan. This can take a little longer when Gemini or network services are busy.",
       );
       const planResponse = await fetch("/api/agent/generate-plan", {
         method: "POST",
@@ -91,7 +92,11 @@ export function OnboardingForm() {
     } catch {
       setError("ArrivalMate AI could not reach the server. Please try again.");
       setStatusMessage("");
+      setIsSubmitting(false);
+      return;
     }
+
+    setIsSubmitting(false);
   }
 
   return (
@@ -111,7 +116,7 @@ export function OnboardingForm() {
             <p>• Personalized tasks grouped by Today, This Week, and This Month</p>
             <p>• Scam warnings and safe actions for common newcomer risks</p>
             <p>• MongoDB-backed plan memory and progress tracking</p>
-            <p>• Gemini planning with deterministic fallback if no API key is configured</p>
+            <p>• Gemini planning with resilient fallback if Gemini is unavailable</p>
           </div>
         </div>
 
@@ -122,7 +127,7 @@ export function OnboardingForm() {
             </div>
           ) : null}
 
-          {isPending && statusMessage ? (
+          {isSubmitting && statusMessage ? (
             <div className="mb-6 rounded-[24px] border border-[var(--line)] bg-[rgba(238,246,246,0.92)] p-5">
               <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[var(--brand-strong)]">
                 ArrivalMate AI is working
@@ -331,14 +336,12 @@ export function OnboardingForm() {
           <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
             <Button
               className="sm:min-w-56"
-              disabled={isPending}
-              onClick={() =>
-                startTransition(() => {
-                  void handleSubmit();
-                })
-              }
+              disabled={isSubmitting}
+              onClick={() => {
+                void handleSubmit();
+              }}
             >
-              {isPending ? "Generating..." : "Generate My Plan"}
+              {isSubmitting ? "Generating..." : "Generate My Plan"}
             </Button>
             <p className="text-sm text-[var(--muted)]">
               ArrivalMate AI provides general guidance only and is not legal, immigration, medical, or financial advice.

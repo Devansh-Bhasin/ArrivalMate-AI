@@ -4,12 +4,30 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 const features = [
-  "Personalized checklist",
-  "Local safety guidance",
-  "Scam warning agent",
-  "Progress tracking",
-  "MongoDB-powered memory",
-  "Gemini-powered planning",
+  {
+    title: "Personalized checklist",
+    description: "Turn arrival details into a clear 30-day checklist grouped by Today, This Week, and This Month.",
+  },
+  {
+    title: "Local safety guidance",
+    description: "Surface practical BC newcomer cautions around housing, calls, identity sharing, and rushed payments.",
+  },
+  {
+    title: "Scam warning agent",
+    description: "Highlight common newcomer scam patterns and pair each one with a safer next action.",
+  },
+  {
+    title: "Progress tracking",
+    description: "Mark tasks complete, keep momentum visible, and make the dashboard feel useful instead of static.",
+  },
+  {
+    title: "MongoDB-powered memory",
+    description: "Save profiles, plans, task updates, and agent logs so the app remembers what changed over time.",
+  },
+  {
+    title: "Gemini-powered planning",
+    description: "Use structured AI planning with resilient demo-mode fallback when Gemini is unavailable or rate-limited.",
+  },
 ];
 
 export default function Home() {
@@ -71,11 +89,11 @@ export default function Home() {
       <section className="mx-auto max-w-7xl px-6 pb-20 lg:px-8">
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {features.map((feature) => (
-            <Card key={feature} className="bg-white/78">
+            <Card key={feature.title} className="bg-white/78">
               <div className="h-12 w-12 rounded-2xl bg-[linear-gradient(135deg,rgba(15,118,110,0.16),rgba(244,201,93,0.35))]" />
-              <h3 className="mt-5 text-2xl font-semibold">{feature}</h3>
+              <h3 className="mt-5 text-2xl font-semibold">{feature.title}</h3>
               <p className="mt-3 text-sm leading-6 text-[var(--muted)]">
-                Built for demo-ready planning that goes beyond chat into saved memory, structured plans, and progress-aware actions.
+                {feature.description}
               </p>
             </Card>
           ))}
